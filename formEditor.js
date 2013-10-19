@@ -36,8 +36,8 @@ var FormEditor = $.fn.formEditor = function () {
 		log("getInstance");
 
 		var object = $.extend({},FormEditor.FormItemAbstract,type);
-		object["options"] = $.extend({},type["default"],object["options"]);
-		object.generateAccessors();
+                object["options"] = $.extend({},object["options"],type["default"]);
+                object.generateAccessors();
 		return object;
 	},
   	"getHtml" : function () {
@@ -108,7 +108,7 @@ this.FormItemInput = $.extend({}, this.FormItemAbstract, {
 	"getHtml" : function () {
    		return "<input type='text' value='"+this.options['value']+"' name='feild_"+this.domId+"'/>";
   	}
-	
+
 });
 
 this.FormItemTextArea = $.extend({}, this.FormItemAbstract, {
@@ -213,13 +213,6 @@ this.FormItemMultiFile = $.extend({}, this.FormItemAbstract, {
 });
 
 
-
-
-
-
-
-
-
 this.options = { 
 	'formItemTypes' : {
    		"FormItemInput" 	: this.FormItemInput,
@@ -321,8 +314,9 @@ this.refreshLeftDragTools = function () {
 	var formTypeArea = $("#formEdit_tabsLeft div.tabs_margin");
 	$(formTypeArea).empty();
   	$.each(this.options['formItemTypes'],function(index,formItemTypeObject){
-    		var previewTile = $("<div>")
-			.attr('id', formItemTypeObject['default']['typeName'])
+    		formItemTypeObject['options'] = $.extend({},formItemTypeObject['options'],formItemTypeObject['default'])
+                var previewTile = $("<div>")
+			.attr('id', formItemTypeObject['options']['typeName'])
 			.addClass('formItemDrag')
 			.append(formItemTypeObject.getPreviewTile());
     		formTypeArea.append(previewTile);
@@ -335,39 +329,41 @@ this.refreshLeftDragTools = function () {
   	});
 };
 
- this.setTemplate = function (object) {
+    this.setTemplate = function (object) {
   
 	log('setTemplate');
 
-  $(object).html(''+
-'<div class="formEdit_left">'+
-' <div id="formEdit_tabsLeft">'+
-'  <ul>'+
-'  <li><a href="#tab_feilds">Feilds</a></li>'+
-'  <li><a href="#tab_options">Options</a></li>'+
-'  </ul>'+
-'  <div id="tab_feilds">'+
-'   <div class="tabs_margin connectedSortable"></div>'+
-'  </div>'+
-'  <div id="tab_options">'+
-'   <div class="tab_options_margin"></div>'+
-'  </div>'+
-' </div>'+
-'</div>'+
-'<div class="formEdit_center">'+
-' <div id="formEdit_tabsCenter">'+
-'  <ul>'+
-'  <li><a href="#tab_form">Form Edit</a></li>'+
-'  <li><a href="#tab_log">Log</a></li>'+
-'  </ul>'+
-'  <div id="tab_form">'+
-'   <div class="form_margin connectedSortable"></div>'+
-'  </div>'+
-'  <div id="tab_log">'+
-'   <div id="logOutput"></div>'+
-'  </div>'+
-' </div>'+
-'</div>');
+        $(object).html(''+
+            '<table width="100%"><tr><td class="formEdit_left"><div class="formEdit_left">'+
+            '<div id="formEdit_tabsLeft">'+
+            '<ul>'+
+            '<li><a href="#tab_feilds">Feilds</a></li>'+
+            '<li><a href="#tab_options">Options</a></li>'+
+            '</ul>'+
+            '<div id="tab_feilds">'+
+            '<div class="tabs_margin connectedSortable"></div>'+
+            '</div>'+
+            '<div id="tab_options">'+
+            '<div class="tab_options_margin"></div>'+
+            '</div>'+
+            '</div>'+
+            '</div>'+
+            '</td><td class="formEdit_center">'+
+            '<div class="formEdit_center">'+
+            '<div id="formEdit_tabsCenter">'+
+            '<ul>'+
+            '<li><a href="#tab_form">Form Edit</a></li>'+
+            '<li><a href="#tab_log">Log</a></li>'+
+            '</ul>'+
+            '<div id="tab_form">'+
+            '<div class="form_margin connectedSortable"></div>'+
+            '</div>'+
+            '<div id="tab_log">'+
+            '<div id="logOutput"></div>'+
+            '</div>'+
+            '</div>'+
+            '</div>'+
+            '</td></tr></table>');
 
 	/*
 	$('.splitter').draggable({    
@@ -431,11 +427,11 @@ this.refreshFormItem = function (formItem) {
 		thisObject.setOptionsPanel(formItem);
 		$("div#formEdit_tabsLeft").tabs('enable', 1);
 		$("div#formEdit_tabsLeft").tabs('select', 1);
-	}).mouseover(function() {
+	}).mouseover(function(e) {
 		$(this).find(".formItemTools").fadeIn();
 		$(this).preventDefault();
 		return false;
-	}).mouseout(function() {
+	}).mouseout(function(e) {
 		$(this).find(".formItemTools").fadeOut();
 		$(this).preventDefault();
 		return false;
@@ -450,7 +446,7 @@ this.getFormItemHtml = function (formItem) {
 
 	var content = '<div class="formItemPanel">'+
 		'<div class="formItemTools" style="display:none;"><span class="ui-icon ui-icon-circle-close"></span></div>'+
-      		'<div class="formItemDescription"><span class="ui-icon ui-icon-info"></span>'+formItem.getDescription()+'</div>'+
+      		'<div class="formItemDescription">'+formItem.getDescription()+'</div>'+
       		'<div class="formItemLabel">'+formItem.getLabel()+'</div>'+
       		'<div class="formItemInput">'+formItem.getHtml()+'</div>'+
       		'<div class="formItemMessage"></div>'+

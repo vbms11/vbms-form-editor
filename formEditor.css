@@ -19,27 +19,39 @@ ul li ol {
 
 /* layout */
 
-.formEdit_left {
-	float: left;
-	width: 275px;
-	min-height: 200px;
+div.formEdit_left {
+    width: 275px;
+    min-height: 200px;
 }
 
-.formEdit_center {
-	width: 100%;
-	margin-left: 280px;
-	position: relative;
+div.formEdit_center {
+    min-height: 200px;
+}
+
+td.formEdit_left {
+    width: 1%;
+    vertical-align: top;
+}
+
+td.formEdit_center {
+    width: 99%;
+    vertical-align: top;
 }
 
 .tabs {
 	
 }
+
+#tab_feilds div div {
+    margin-bottom: 5px;
+}
+
 .tabs ul, .tabs li, .tabs ol {
 	margin:0px;
 	padding:0px;
 }
 .ui-state-highlight {
-	height:40px;
+    height:25px;
 }
 
 #formEdit_tabsLeft {
@@ -48,9 +60,7 @@ ul li ol {
 	
 }
 .formItemDrag {
-	height: 64px;
 	width: 100%;
-	margin: 0px 0px 0xp 5px;
 }
 .formEdit_center .form_margin {
 	min-height: 400px;
@@ -60,7 +70,7 @@ ul li ol {
 /* parts of the form edit */
 
 .formItemPanel {
-	min-height:100px;
+	min-height:20px;
 	border: 1px solid transparent;
 	margin: 0px 0px 5px 0px
 }
@@ -94,16 +104,15 @@ ul li ol {
 	width:100%;	
 }
 .formEditorAttribsTable tr td {
-	width:99%;
+    white-space:nowrap;
+    width:99%;
 }
-.formEditorAttribsTable tr td[0] {
-	width:1%;
-	white-space:nowrap;
+.formEditorAttribsTable tr td:first-child {
+    width:1%;
 }
-
-.formEditorAttribsTable td {
-	white-space: no-wrap;
-}
+.formEditorAttribsTable input, .formEditorAttribsTable select {
+    width: 100%;
+} 
 
 
 
