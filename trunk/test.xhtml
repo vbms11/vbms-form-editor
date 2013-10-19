@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html>
+<head>
+<title>form editor demo</title>
+<link rel="stylesheet" href="jquery/css/ui-lightness/jquery.ui.all.css" type="text/css" media="all" />
+<script type="text/javascript" src="jquery/js/jquery-1.6.2.min"></script>
+<script type="text/javascript" src="jquery/js/jquery-ui-1.8.15.custom.min"></script>
+<link rel="stylesheet" href="formEditor.css" type="text/css"  media="all" />
+<script type="text/javascript" src="formEditor.js?as3"></script>
+</head>
+<body>
+<div id="formEditor"><table width="100%"><tbody><tr><td class="formEdit_left"><div class="formEdit_left"><div id="formEdit_tabsLeft" class="ui-tabs ui-widget ui-widget-content ui-corner-all"><ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all"><li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tab_feilds">Feilds</a></li><li class="ui-state-default ui-corner-top ui-state-disabled"><a href="#tab_options">Options</a></li>&nbsp;&nbsp;</ul>&nbsp;&nbsp;<div id="tab_feilds" class="ui-tabs-panel ui-widget-content ui-corner-bottom">&nbsp;&nbsp;&nbsp;<div class="tabs_margin connectedSortable ui-sortable"><div id="FormItemInput" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemTextArea" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemCheckbox" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemRadio" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemPassword" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemDate" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemTime" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemSelect" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemMultiSelect" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemFile" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div><div id="FormItemMultiFile" class="formItemDrag"><div style="border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;">Form Item Abstract</div></div></div>&nbsp;&nbsp;</div>&nbsp;&nbsp;<div id="tab_options" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">&nbsp;&nbsp;&nbsp;<div class="tab_options_margin"></div>&nbsp;&nbsp;</div>&nbsp;</div></div></td><td class="formEdit_center"><div class="formEdit_center">&nbsp;<div id="formEdit_tabsCenter" class="ui-tabs ui-widget ui-widget-content ui-corner-all">&nbsp;&nbsp;<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">&nbsp;&nbsp;<li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active"><a href="#tab_form">Form Edit</a></li>&nbsp;&nbsp;<li class="ui-state-default ui-corner-top"><a href="#tab_log">Log</a></li>&nbsp;&nbsp;</ul>&nbsp;&nbsp;<div id="tab_form" class="ui-tabs-panel ui-widget-content ui-corner-bottom">&nbsp;&nbsp;&nbsp;<div class="form_margin connectedSortable ui-sortable"></div>&nbsp;&nbsp;</div>&nbsp;&nbsp;<div id="tab_log" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">&nbsp;&nbsp;&nbsp;<div id="logOutput">init: ui<br>init: tools<br>refreshLeftDragTools<br>starting done.<br></div>&nbsp;&nbsp;</div>&nbsp;</div></div></td></tr></tbody></table></div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    log("starting");
+    var formEditor = new FormEditor();
+    formEditor.init($("div#formEditor"));
+    log("starting done.");
+});
+</script>
+
+</body>
+</html>
