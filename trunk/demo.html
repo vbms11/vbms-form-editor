@@ -13,12 +13,23 @@
 
 <div id="formEditor"></div>
 
+<div>
+    <button type="button" id="toJsonButton">To Json</button>
+    <button type="button" id="fromJsonButton">From Json</button>
+</div>
+<div>
+    <textarea id="jsonText"></textarea>
+</div>
 
 <script type="text/javascript">
 $(document).ready(function(){
-log("starting");
-$("div#formEditor").formEditor({'optionsLocation':'right'}); 
-log("starting done.");
+    $("div#formEditor").formEditor({'optionsLocation':'right'}); 
+    $("#toJsonButton").button().click(function(){
+        $("#jsonText").text($("div#formEditor").formEditor().toJson());
+    });
+    $("#fromJsonButton").button().click(function(){
+        $("div#formEditor").formEditor().fromJson($("#jsonText").text());
+    });
 });
 </script>
 
