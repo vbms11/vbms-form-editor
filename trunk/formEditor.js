@@ -13,7 +13,7 @@ alert(out);
 
 (function($) {
 
-var FormEditor = function (settings) {
+var FormEditor = function (element) {
 
     this.FormItemAbstract = {
 	
@@ -29,7 +29,8 @@ var FormEditor = function (settings) {
             "minLength"     : "", 
             "required"      : "",
             "styleClass"    : "",
-            "typeName"      : "FormItemAbstract"
+            "typeName"      : "FormItemAbstract",
+            "inputName"     : ""
         },
         "getInstance" : function (type) {
 
@@ -42,11 +43,13 @@ var FormEditor = function (settings) {
       	"getHtml" : function () {
        		return "<div style='border: 1px solid silver;'>No Input Feild</div>";
       	},
-            "getOptionsHtml" : function () {
+        "getOptionsHtml" : function () {
 
             log("getOptionsHtml");
 
             var content = "<form><table class='formEditorAttribsTable'><tr>"+
+                "<td>Name:</td>"+
+                "<td><input name='inputName' type='textfeild' value='"+this.options.inputName+"'/></td></tr><tr>"+
                 "<td>Label:</td>"+
                 "<td><input name='label' type='textfeild' value='"+this.options.label+"'/></td></tr><tr>"+
                 "<td>Value:</td>"+
@@ -74,7 +77,7 @@ var FormEditor = function (settings) {
             return content;
      	},
       	"getPreviewTile" : function () {
-       		return "<div style='border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;'>"+this.options['name']+"</div>";
+            return "<div style='border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;'>"+this.options['name']+"</div>";
       	},
         "getItemHtml" : function () {
             return this.getHtml(this.options);
@@ -181,24 +184,25 @@ var FormEditor = function (settings) {
         }
     };
     
+    this.element = $(element);
     this.formItemNumber = 0;
-    this.formItems = [];
+    this.formItems = {};
     this.listOfMethods = {};
     this.selectedItem = null;
     this.hoveredItem = null;
     this.initDone = false;
     
-    this.init = function (object, settings) {
+    this.init = function (settings) {
 
         log('init');
         
         this.options = $.extend(this.options,settings);
         
-        this.setTemplate(object);
+        this.setTemplate();
 
         log('init: ui');
-        $(object).find("div#formEdit_tabsLeft , div#formEdit_tabsCenter").tabs();
-        $("div#formEdit_tabsLeft").tabs('disable', 1);
+        this.element.find("div#formEdit_tabsLeft , div#formEdit_tabsCenter").tabs();
+        this.element.find("div#formEdit_tabsLeft").tabs('disable', 1);
         this.refreshLeftDragTools();
         this.refreshCenterArea();
         this.initDone = true;
@@ -215,6 +219,10 @@ var FormEditor = function (settings) {
         // set value and add change listener
         var itemObject = $('#'+formItem.options.domId);
         $(".formEditorAttribsTable")
+            .find("input[name=inputName]").val(formItem.options.inputName)
+            .keyup(function () {
+                formItem.options.inputName = $(this).val();
+            }).end()
             .find("input[name=label]").val(formItem.options.label)
             .keyup(function () {
                 formItem.options.label = $(this).val();
@@ -338,7 +346,7 @@ var FormEditor = function (settings) {
         '</div>';
     };
 
-    this.setTemplate = function (object) {
+    this.setTemplate = function () {
       
         log('setTemplate');
         
@@ -360,7 +368,7 @@ var FormEditor = function (settings) {
         }
         
         $template += '</tr></table>';
-        $(object).html($template);
+        this.element.html($template);
      };
 
      this.addFormItem = function (type, object, options) {
@@ -385,6 +393,9 @@ var FormEditor = function (settings) {
         } while (this.formItems[this.formItemNumber] !== undefined);
         formItem.options.id = this.formItemNumber;
         formItem.options.domId = 'formItem_'+formItem.options.id;
+        if (formItem.options.inputName === "") {
+            formItem.options.inputName = formItem.options.typeName + formItem.options.id;
+        }
         this.formItems[formItem.options.domId] = formItem;
 
         // remove the preview markup and set id
@@ -392,6 +403,12 @@ var FormEditor = function (settings) {
 
         // insert the form markup
         this.refreshFormItem(formItem);
+    };
+    
+    this.emptyFormItems = function () {
+        $(".formPanel").empty();
+        this.formItems = Array();
+        this.formItemNumber = 0;
     };
 
     this.refreshFormItem = function (formItem) {
@@ -476,8 +493,7 @@ var FormEditor = function (settings) {
     this.fromJson = function (json) {
         
         var thisObject = this;
-        $(".formPanel").empty();
-        this.formItems = Array();
+        this.emptyFormItems();
         $(JSON.parse(json)).each(function (index,object) {
             var formItem = $("<div>",{"class":"formItemDrag"});
             $(".formPanel").append(formItem);
@@ -487,7 +503,7 @@ var FormEditor = function (settings) {
     
 };
 
-$.fn.formEditor = function (arg1,arg2,arg3) {
+$.fn.formEditor = function (arg1) {
     
     var formEditor;
     this.each(function (index,object) {
@@ -496,10 +512,14 @@ $.fn.formEditor = function (arg1,arg2,arg3) {
         if ($.data(this, 'formEditor')) {
             // get the object and call methods
             formEditor = $.data(this, 'formEditor');
+            if (formEditor[arg1]) {
+                var params = Array.prototype.slice.call(arguments, 1);
+                return formEditor[arg1].apply(this, params);
+            }
         } else {
             // init the object and return it
-            formEditor = new FormEditor();
-            formEditor.init(object,arg1);
+            formEditor = new FormEditor(object);
+            formEditor.init(arg1);
             $.data(this, 'formEditor', formEditor);
         }
     });
