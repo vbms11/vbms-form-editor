@@ -13,7 +13,7 @@ alert(out);
 
 (function($) {
 
-$.fn.formEditor = function (settings) {
+var FormEditor = function (settings) {
 
     this.FormItemAbstract = {
 	
@@ -168,7 +168,7 @@ $.fn.formEditor = function (settings) {
         }
     });
 
-    this.options = $.extend({ 
+    this.options = { 
         'optionsLocation'           : 'left',
         'formItemTypes' : {
             "FormItemInput"         : this.FormItemInput,
@@ -179,18 +179,21 @@ $.fn.formEditor = function (settings) {
             "FormItemSelect"        : this.FormItemSelect,
             "FormItemMultiSelect"   : this.FormItemMultiSelect
         }
-    },settings);
+    };
     
     this.formItemNumber = 0;
     this.formItems = [];
     this.listOfMethods = {};
     this.selectedItem = null;
     this.hoveredItem = null;
+    this.initDone = false;
     
-    this.init = function (object) {
+    this.init = function (object, settings) {
 
         log('init');
-
+        
+        this.options = $.extend(this.options,settings);
+        
         this.setTemplate(object);
 
         log('init: ui');
@@ -198,7 +201,7 @@ $.fn.formEditor = function (settings) {
         $("div#formEdit_tabsLeft").tabs('disable', 1);
         this.refreshLeftDragTools();
         this.refreshCenterArea();
-
+        this.initDone = true;
     };
 
     // set the options panel to display the form item
@@ -360,29 +363,35 @@ $.fn.formEditor = function (settings) {
         $(object).html($template);
      };
 
-     this.addFormItem = function (type, object) {
+     this.addFormItem = function (type, object, options) {
 
         log('addFormItem');
-
-        var formItem = this.options["formItemTypes"][type];
-        if (formItem === undefined) {
-            log("cheated");
-        } else {
-            // create and save new item
+        
+        // get form item instance
+        var formItem;
+            formItem = this.options["formItemTypes"][type];
+            if (formItem === undefined) {
+                log("cheated");
+                return;
+            }
             formItem = this.FormItemAbstract.getInstance(formItem);
-            do {
-                this.formItemNumber++;
-            } while (this.formItems[this.formItemNumber] !== undefined);
-            formItem.options.id = this.formItemNumber;
-            formItem.options.domId = 'formItem_'+formItem.options.id;
-            this.formItems[formItem.options.domId] = formItem;
+        if (options !== undefined) {
+            formItem.options = $.extend(formItem.options,options);
+        }
+        
+        // save in formItems array
+        do {
+            this.formItemNumber++;
+        } while (this.formItems[this.formItemNumber] !== undefined);
+        formItem.options.id = this.formItemNumber;
+        formItem.options.domId = 'formItem_'+formItem.options.id;
+        this.formItems[formItem.options.domId] = formItem;
 
-            // remove the preview markup and set id
-            $(object).empty().attr('id',formItem.options.domId);
+        // remove the preview markup and set id
+        $(object).empty().attr('id',formItem.options.domId);
 
-            // insert the form markup
-            this.refreshFormItem(formItem);
-        }
+        // insert the form markup
+        this.refreshFormItem(formItem);
     };
 
     this.refreshFormItem = function (formItem) {
@@ -455,28 +464,46 @@ $.fn.formEditor = function (settings) {
     
     this.toJson = function () {
         
+        var thisObject = this;
         var formItemsSorted = Array();
         $(".formPanel .formItemDrag").each(function (index,object) {
-            formItemsSorted.push(this.formItems[$(object).attr("id")]);
+            formItemsSorted.push(thisObject.formItems[$(object).attr("id")].options);
         });
         
-        JSON.stringify(formItemsSorted);
+        return JSON.stringify(formItemsSorted);
     };
     
     this.fromJson = function (json) {
         
-        $thisObject = this;
+        var thisObject = this;
+        $(".formPanel").empty();
+        this.formItems = Array();
         $(JSON.parse(json)).each(function (index,object) {
-            var formItem = $("<div>").addClass("formItemDrag");
+            var formItem = $("<div>",{"class":"formItemDrag"});
             $(".formPanel").append(formItem);
-            $thisObject.addFormItem(object.typeName, object);
+            thisObject.addFormItem(object.typeName, formItem, object);
         });
     };
     
-    var thisObject = this;
-    return this.each(function (index,object) {
-        thisObject.init(object);
+};
+
+$.fn.formEditor = function (arg1,arg2,arg3) {
+    
+    var formEditor;
+    this.each(function (index,object) {
+        
+        // get the object
+        if ($.data(this, 'formEditor')) {
+            // get the object and call methods
+            formEditor = $.data(this, 'formEditor');
+        } else {
+            // init the object and return it
+            formEditor = new FormEditor();
+            formEditor.init(object,arg1);
+            $.data(this, 'formEditor', formEditor);
+        }
     });
+    return formEditor;
 };
 
 }(jQuery));
