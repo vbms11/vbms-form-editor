@@ -1,14 +1,14 @@
-﻿
+
 function log (message) {
 	$('#logOutput').append(message+"<br/>");
 }
 function dump(obj) {
-    var out = obj + "\n";
-    for (var i in obj) {
-        out += i + ": " + obj[i] + "\n";
-    }
-    log(out);
-alert(out);
+    var out = obj + "\n";
+    for (var i in obj) {
+        out += i + ": " + obj[i] + "\n";
+    }
+    log(out);
+    alert(out);
 }
 
 (function($) {
@@ -40,9 +40,9 @@ var FormEditor = function (element) {
             object["options"] = $.extend({},object["options"],type["default"]);
             return object;
         },
-      	"getHtml" : function () {
-       		return "<div style='border: 1px solid silver;'>No Input Feild</div>";
-      	},
+    	"getHtml" : function () {
+    		return "<div style='border: 1px solid silver;'>No Input Feild</div>";
+    	},
         "getOptionsHtml" : function () {
 
             log("getOptionsHtml");
@@ -67,7 +67,7 @@ var FormEditor = function (element) {
                 "<td><input name='maxLength' type='textfeild' value='"+this.options.maxLength+"'/></td></tr><tr>"+
                 "<td>Validator:</td>"+
                 "<td><select name='validator'>"+
-                "	<option value=''>(none)</option>"+
+                "	<option value='none'>(none)</option>"+
                 "	<option value='text'>Text</option>"+
                 "	<option value='alpha'>Alphabetical</option>"+
                 "	<option value='numbers'>Numerical</option>"+
@@ -75,10 +75,10 @@ var FormEditor = function (element) {
                 "</select></td></tr></table></form>";
 
             return content;
-     	},
-      	"getPreviewTile" : function () {
+    	},
+    	"getPreviewTile" : function () {
             return "<div style='border: 1px solid silver; background: rgb(245,245,245); padding: 2px 5px;'>"+this.options['name']+"</div>";
-      	},
+    	},
         "getItemHtml" : function () {
             return this.getHtml(this.options);
         }
@@ -190,8 +190,7 @@ var FormEditor = function (element) {
     this.listOfMethods = {};
     this.selectedItem = null;
     this.hoveredItem = null;
-    this.initDone = false;
-    
+
     this.init = function (settings) {
 
         log('init');
@@ -205,7 +204,10 @@ var FormEditor = function (element) {
         this.element.find("div#formEdit_tabsLeft").tabs('disable', 1);
         this.refreshLeftDragTools();
         this.refreshCenterArea();
-        this.initDone = true;
+        
+        if (this.options.json) {
+            this.fromJson(this.options.json);
+        }
     };
 
     // set the options panel to display the form item
@@ -266,17 +268,17 @@ var FormEditor = function (element) {
 
 	var thisObject = this;
         $("div.formPanel").sortable({
-            items: "div.formItemDrag",
-            connectWith: ".connectedSortable",
-            placeholder: "ui-state-highlight",
+            items: "div.formItemDrag",
+            connectWith: ".connectedSortable",
+            placeholder: "ui-state-highlight",
             accept: "div.formItemDrag",
             axis: 'y',
-            sort: function(event,ui) {  
-            },
+            sort: function(event,ui) {
+            },
             receive: function (event,ui) {
                 thisObject.event_receive_center(event,ui);
             }
-  	}).disableSelection();
+	}).disableSelection();
         
     };
     
@@ -302,7 +304,7 @@ var FormEditor = function (element) {
                 .attr('id', formItemTypeObject['options']['typeName'])
                 .addClass('formItemDrag')
                 .append(formItemTypeObject.getPreviewTile());
-            formTypeArea.append(previewTile);
+            formTypeArea.append(previewTile);
         });
         $("#formEdit_tabsLeft div.tabs_margin").sortable({
             connectWith: ".connectedSortable",
@@ -347,7 +349,7 @@ var FormEditor = function (element) {
     };
 
     this.setTemplate = function () {
-      
+    
         log('setTemplate');
         
         $template = '<table width="100%"><tr>';
@@ -369,9 +371,9 @@ var FormEditor = function (element) {
         
         $template += '</tr></table>';
         this.element.html($template);
-     };
+    };
 
-     this.addFormItem = function (type, object, options) {
+    this.addFormItem = function (type, object, options) {
 
         log('addFormItem');
         
@@ -388,10 +390,14 @@ var FormEditor = function (element) {
         }
         
         // save in formItems array
-        do {
-            this.formItemNumber++;
-        } while (this.formItems[this.formItemNumber] !== undefined);
-        formItem.options.id = this.formItemNumber;
+        if (formItem.options.id === "") {
+            do {
+                this.formItemNumber++;
+            } while (this.formItems[this.formItemNumber] !== undefined);
+            formItem.options.id = this.formItemNumber;
+        } else if (formItem.options.id > this.formItemNumber) {
+            this.formItemNumber = formItem.options.id;
+        }
         formItem.options.domId = 'formItem_'+formItem.options.id;
         if (formItem.options.inputName === "") {
             formItem.options.inputName = formItem.options.typeName + formItem.options.id;
