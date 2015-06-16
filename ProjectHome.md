@@ -1,0 +1,2 @@
+The idea is to allow the user/admin to be able to edit forms per drag drop.
+its written with jquery. by extending an abstract formItem class it is possible to include your own form widgets the forms can include validation.
